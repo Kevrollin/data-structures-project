@@ -1,0 +1,79 @@
+/* Professional UI styles for Mini Campus Funding Manager */
+:root{
+  --bg:#f6f8fb;--card:#ffffff;--muted:#6b7280;--accent:#2563eb;--success:#10b981;--error:#ef4444;
+  --radius:12px;--shadow:0 6px 18px rgba(15,23,42,0.08);
+}
+body{font-family:Inter,system-ui,Segoe UI,Arial; background:var(--bg); color:#0f172a}
+.container{max-width:1100px;margin:24px auto;padding:0 20px}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+h1{margin:0 0 8px}
+.muted{color:var(--muted)}
+.btn{background:var(--accent);color:white;border:none;padding:8px 14px;border-radius:10px;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+
+/* Toast / slider */
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{min-width:280px;max-width:380px;background:var(--card);border-radius:10px;padding:12px 14px;box-shadow:0 6px 20px rgba(2,6,23,0.12);display:flex;flex-direction:column;overflow:hidden;transform:translateY(-20px);opacity:0;animation:slideIn .28s forwards}
+.toast.success{border-left:4px solid var(--success)}
+.toast.error{border-left:4px solid var(--error)}
+.toast .title{font-weight:600;margin-bottom:6px}
+.toast .msg{color:#334155;font-size:14px}
+.toast .progress{height:4px;background:rgba(2,6,23,0.06);border-radius:3px;margin-top:10px;overflow:hidden}
+.toast .progress > i{display:block;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0.12),rgba(255,255,255,0.05)),var(--bar);width:100%;transform-origin:left;animation:progress var(--dur) linear forwards}
+
+@keyframes slideIn{to{transform:translateY(0);opacity:1}}
+@keyframes progress{to{transform:scaleX(0)}}
+
+.hidden{display:none}
+
+/* pill list for student preview */
+.pill-list{display:flex;flex-direction:column;gap:8px;overflow:auto;padding:8px 0;max-height:240px}
+.pill{background:#eef2ff;color:#0f172a;padding:10px 12px;border-radius:10px;white-space:normal;cursor:pointer;border:1px solid rgba(15,23,42,0.04);width:100%}
+.pill:hover{box-shadow:0 6px 14px rgba(15,23,42,0.06);transform:translateY(-2px)}
+.count-badge{background:rgba(37,99,235,0.08);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:600}
+/* Professional, clean stylesheet for the Mini Campus Funding Manager */
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --accent-2:#06b6d4;
+  --success:#10b981;
+  --danger:#ef4444;
+  --radius:10px;
+  --shadow: 0 6px 18px rgba(16,24,40,0.08);
+  --maxw:1100px;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background:var(--bg);
+  color:#0f172a;
+  margin:0;
+  padding:40px 20px;
+}
+.wrap{max-width:var(--maxw);margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+h1{font-size:20px;margin:0}
+.lead{color:var(--muted);margin-top:6px}
+.actions{display:flex;gap:10px}
+.btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+.form-row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text], input[type=number], select{padding:10px;border-radius:8px;border:1px solid #e6eef8;flex:1;min-width:160px}
+label{font-size:13px;color:var(--muted)}
+ul.list{list-style:none;padding:0;margin:0}
+ul.list li{padding:10px;border-radius:8px;border:1px solid #f1f5f9;margin-bottom:8px;background:#fff}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.status{padding:6px 8px;border-radius:999px;font-weight:600;font-size:12px}
+.status.approved{background:rgba(16,185,129,0.12);color:var(--success)}
+.status.funded{background:rgba(6,182,212,0.12);color:var(--accent-2)}
+.status.submitted{background:rgba(37,99,235,0.08);color:var(--accent)}
+.status.rejected{background:rgba(239,68,68,0.08);color:var(--danger)}
+
+@media (max-width:900px){.grid{grid-template-columns:1fr}}

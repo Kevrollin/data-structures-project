@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin Page - Mini Campus Funding Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="brand">
+          <div class="logo">CF</div>
+          <div>
+            <h1>Admin</h1>
+            <div class="lead">Manage users and approve requests</div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn secondary" href="/">Home</a>
+        </div>
+      </div>
+
+      {% set flashed = get_flashed_messages(with_categories=true) %}
+      <script>window.FLASK_MESSAGES = {{ flashed|tojson }};</script>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h3>All Users</h3>
+            <div style="margin-bottom:12px">
+              <button class="btn" onclick="showRole('all')">All</button>
+              <button class="btn secondary" onclick="showRole('student')">Students</button>
+              <button class="btn secondary" onclick="showRole('donor')">Donors</button>
+              <button class="btn secondary" onclick="showRole('admin')">Admins</button>
+            </div>
+            <ul id="users" class="list">
+              {% for u in users %}
+                <li data-role="{{ u.role }}">{{ u.id }} — {{ u.name }} <span class="small muted">({{ u.role }})</span></li>
+              {% else %}
+                <li class="muted">No users</li>
+              {% endfor %}
+            </ul>
+            <h4 style="margin-top:12px">Create donor/admin</h4>
+            <form method="post" action="/register" class="form-row">
+              <input name="user_id" placeholder="User ID (email)" required />
+              <input name="name" placeholder="Name" required />
+              <select name="role">
+                <option value="donor">donor</option>
+                <option value="admin">admin</option>
+              </select>
+              <button class="btn" type="submit">Create</button>
+            </form>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h3>Pending Requests (by urgency)</h3>
+            {% if pending %}
+              <ul class="list">
+                {% for r in pending %}
+                  <li>{{ r.id }} — {{ r.student_id }} — {{ r.amount }} — <strong>urgency {{ r.urgency }}</strong>
+                    <div style="margin-top:8px">
+                      <form style="display:inline" method="post" action="/admin/decide">
+                        <input type="hidden" name="request_id" value="{{ r.id }}" />
+                        <button class="btn" name="decision" value="approve">Approve</button>
+                      </form>
+                      <form style="display:inline;margin-left:8px" method="post" action="/admin/decide">
+                        <input type="hidden" name="request_id" value="{{ r.id }}" />
+                        <button class="btn secondary" name="decision" value="reject">Reject</button>
+                      </form>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <div class="muted">No pending requests</div>
+            {% endif %}
+          </div>
+        </aside>
+      </div>
+
+    </div>
+
+    <script>
+      function showRole(role){
+        document.querySelectorAll('#users li').forEach(function(li){
+          li.style.display = (role==='all' || li.getAttribute('data-role')===role) ? '' : 'none';
+        });
+      }
+    </script>
+    <script src="{{ url_for('static', filename='notify.js') }}"></script>
+  </div>
+  </body>
+</html>

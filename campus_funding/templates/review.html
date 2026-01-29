@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Review Request</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="wrap">
+      {% set flashed = get_flashed_messages(with_categories=true) %}
+      <script>window.FLASK_MESSAGES = {{ flashed|tojson }};</script>
+      <div class="card">
+        <h2>Review {{ req.id }}</h2>
+        <div class="small muted">Student: {{ req.student_id }}</div>
+        <div class="small muted">Amount: {{ req.amount }}</div>
+        <div class="small muted">Urgency: {{ req.urgency }}</div>
+        <div style="margin-top:12px">
+          <form method="post" action="/admin/decide" style="display:inline">
+            <input type="hidden" name="request_id" value="{{ req.id }}" />
+            <button class="btn" name="decision" value="approve">Approve</button>
+          </form>
+          <form method="post" action="/admin/decide" style="display:inline;margin-left:8px">
+            <input type="hidden" name="request_id" value="{{ req.id }}" />
+            <button class="btn secondary" name="decision" value="reject">Reject</button>
+          </form>
+        </div>
+        <p style="margin-top:12px"><a href="/">Back</a></p>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='notify.js') }}"></script>
+  </body>
+</html>
