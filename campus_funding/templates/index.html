@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mini Campus Funding Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script>
+      // Small helpers to show/hide sections
+      function toggle(id){
+        var el=document.getElementById(id); el.classList.toggle('hidden');
+      }
+
+      // Live-filter students list by id prefix as the user types.
+      function filterStudents(prefix){
+        prefix = prefix.trim().toLowerCase();
+        var items = document.querySelectorAll('#students-list li');
+        items.forEach(function(li){
+          var id = li.getAttribute('data-id').toLowerCase();
+          li.style.display = id.indexOf(prefix) === 0 ? '' : 'none';
+        });
+      }
+
+      // Show the inline fund form for a specific request id and prefill amount
+      function showFundForm(reqId, amount){
+        var id = 'fund-' + reqId;
+        var el = document.getElementById(id);
+        if(!el) return;
+        // toggle visibility
+        if(el.classList.contains('hidden')){
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+        // try to prefill donation amount input
+        var inp = el.querySelector('input[name=donation]');
+        if(inp) inp.value = amount;
+      }
+
+      // Fill the student id input in the submit form when a student pill is clicked
+      function selectStudent(id){
+        var inp = document.getElementById('student_id');
+        if(inp){ inp.value = id; inp.focus(); }
+        // also ensure the submit section is visible
+        var sec = document.getElementById('submit-section');
+        if(sec && sec.classList.contains('hidden')) sec.classList.remove('hidden');
+      }
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="brand">
+          <div class="logo">CF</div>
+          <div>
+            <h1>Mini Campus Funding Manager</h1>
+            <div class="lead">A tiny system demonstrating 5 ADTs working together</div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="/donor">Donor</a>
+          <a class="btn secondary" href="/admin">Admin</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="muted">
+          This app demonstrates the practical use of several data structures:
+          <strong>Set</strong> (unique users), <strong>Hash Map</strong> (fast lookup),
+          a minimal <strong>Binary Search Tree</strong> (sorted by amount), a
+          <strong>Heap</strong> priority queue (by urgency), and a <strong>Queue</strong>
+          for approved requests.
+        </p>
+      </div>
+
+    {# Embed flashed messages (with categories) for the animated toast system #}
+    {% set flashed = get_flashed_messages(with_categories=true) %}
+    <script>window.FLASK_MESSAGES = {{ flashed|tojson }};</script>
+    <script>
+      // If registration just succeeded, auto-open the register panel so the
+      // user sees the updated list immediately.
+      (function(){
+        try{
+          var msgs = window.FLASK_MESSAGES || [];
+          for(var i=0;i<msgs.length;i++){
+            var item = msgs[i];
+            if(Array.isArray(item) && item.length>=2){
+              var cat = item[0]; var text = item[1]||'';
+              if(cat==='success' && text.toLowerCase().indexOf('registered')!==-1){
+                var el = document.getElementById('register-section');
+                if(el) el.classList.remove('hidden');
+                break;
+              }
+            }
+          }
+        }catch(e){console.warn('autotoggle error',e)}
+      })();
+    </script>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <div><strong>Actions</strong><div class="small muted">Quick links to common tasks</div></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn" onclick="toggle('register-section')">Register user</button>
+              <button class="btn secondary" onclick="toggle('submit-section')">Submit funding request</button>
+              <a class="btn" href="/donor">Donor</a>
+              <a class="btn secondary" href="/admin">Admin</a>
+            </div>
+            <div style="margin-top:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div class="small muted">Registered students (preview)</div>
+                <div class="count-badge">{{ students|length }}</div>
+              </div>
+              <div class="pill-list" style="margin-top:8px">
+                {% if students %}
+                  {% for s in students %}
+                    <div class="pill" onclick="selectStudent('{{ s.id }}')">{{ s.id }} — {{ s.name }}</div>
+                  {% endfor %}
+                {% else %}
+                  <div class="muted small">No students yet</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div id="register-section" class="card hidden">
+            <h3>Register User</h3>
+            <form method="post" action="/register" class="form-row">
+              <input name="user_id" placeholder="User ID (email)" required />
+              <input name="name" placeholder="Name" required />
+              <select name="role">
+                <option value="student">student</option>
+                <option value="admin">admin</option>
+                <option value="donor">donor</option>
+              </select>
+              <button class="btn" type="submit">Register</button>
+            </form>
+
+            <h4 style="margin-top:16px">Registered students</h4>
+            <ul id="students-list" class="list">
+              {% for u in students %}
+                <li data-id="{{ u.id }}">{{ u.id }} — {{ u.name }}</li>
+              {% else %}
+                <li class="muted">No students registered yet</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div id="submit-section" class="card hidden">
+            <h3>Submit Funding Request</h3>
+            <div class="form-row" style="margin-bottom:10px">
+              <label class="small muted">Filter student id</label>
+              <input type="text" oninput="filterStudents(this.value)" placeholder="type id prefix to filter" />
+            </div>
+            <form method="post" action="/submit" class="form-row">
+              <input id="student_id" name="student_id" placeholder="Student ID" required />
+              <input name="amount" type="number" placeholder="Amount" required />
+              <input name="urgency" type="number" placeholder="Urgency (1-10)" required />
+              <button class="btn" type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4>Approved Requests</h4>
+            {% if approved %}
+              <ul class="list">
+                {% for r in approved %}
+                  <li>{{ r.id }} — {{ r.student_id }} — <span class="status approved">{{ r.status }}</span> <div class="small muted">Amount: {{ r.amount }}</div></li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <div class="muted">No approved requests</div>
+            {% endif %}
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4>Heap Top</h4>
+            {% if heap_top %}
+              <div>{{ heap_top.id }} — urgency={{ heap_top.urgency }} — amount={{ heap_top.amount }}</div>
+            {% else %}
+              <div class="muted">No pending requests</div>
+            {% endif %}
+          </div>
+        </aside>
+      </div>
+
+    <section>
+      <h2>Approved Requests (queue)</h2>
+      {% if approved %}
+        <ul>
+          {% for r in approved %}
+            <li>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div>{{ r.id }} - student={{ r.student_id }}, amount={{ r.amount }}</div>
+                <div>
+                  <span style="background:#dff6ea;color:#1a7f37;padding:4px 8px;border-radius:12px;margin-right:8px">approved</span>
+                  <button class="btn" onclick="showFundForm('{{ r.id }}', '{{ r.amount }}')">Fund</button>
+                </div>
+              </div>
+              <div id="fund-{{ r.id }}" class="hidden" style="margin-top:8px">
+                <form method="post" action="/donate">
+                  <input type="hidden" name="request_id" value="{{ r.id }}" />
+                  <input name="donor_id" placeholder="Donor ID" required />
+                  <input name="donation" placeholder="Donation amount" value="{{ r.amount }}" required />
+                  <button type="submit">Donate</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div>No approved requests</div>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>All Requests (sorted by amount)</h2>
+      {% if sorted_requests %}
+        <ul>
+          {% for r in sorted_requests %}
+            <li>{{ r.id }}: student={{ r.student_id }}, amount={{ r.amount }}, urgency={{ r.urgency }}, status={{ r.status }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div>No requests yet</div>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Heap Top (highest urgency)</h2>
+      {% if heap_top %}
+        <div>{{ heap_top.id }} - urgency={{ heap_top.urgency }}, amount={{ heap_top.amount }}</div>
+      {% else %}
+        <div>No pending requests</div>
+      {% endif %}
+    </section>
+
+    <script src="{{ url_for('static', filename='notify.js') }}"></script>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "users": [
+    { "id": "admin1", "name": "Alice Admin", "role": "admin" },
+    { "id": "admin2", "name": "Eve Admin", "role": "admin" },
+    { "id": "donor1", "name": "Carol Donor", "role": "donor" },
+    { "id": "donor2", "name": "Dave Donor", "role": "donor" },
+    { "id": "student1", "name": "Bob Student", "role": "student" },
+    { "id": "student2", "name": "Maria Student", "role": "student" },
+    { "id": "student3", "name": "Kumar Student", "role": "student" },
+    { "id": "student4", "name": "Leah Student", "role": "student" },
+    { "id": "student5", "name": "Omar Student", "role": "student" },
+    { "id": "student6", "name": "Nina Student", "role": "student" },
+    { "id": "student7", "name": "Ibrahim Student", "role": "student" },
+    { "id": "student8", "name": "Zara Student", "role": "student" }
+  ],
+  "requests": [
+    { "id": "R1", "student_id": "student1", "amount": 200.0, "urgency": 8, "status": "submitted" },
+    { "id": "R2", "student_id": "student2", "amount": 150.0, "urgency": 5, "status": "approved" },
+    { "id": "R3", "student_id": "student3", "amount": 500.0, "urgency": 9, "status": "submitted" },
+    { "id": "R4", "student_id": "student1", "amount": 100.0, "urgency": 3, "status": "funded" },
+    { "id": "R5", "student_id": "student4", "amount": 750.0, "urgency": 10, "status": "submitted" },
+    { "id": "R6", "student_id": "student5", "amount": 50.0, "urgency": 2, "status": "approved" },
+    { "id": "R7", "student_id": "student6", "amount": 300.0, "urgency": 7, "status": "submitted" },
+    { "id": "R8", "student_id": "student7", "amount": 120.0, "urgency": 4, "status": "rejected" },
+    { "id": "R9", "student_id": "student8", "amount": 60.0, "urgency": 1, "status": "approved" },
+    { "id": "R10", "student_id": "student2", "amount": 220.0, "urgency": 6, "status": "submitted" },
+    { "id": "R11", "student_id": "student3", "amount": 400.0, "urgency": 8, "status": "approved" },
+    { "id": "R12", "student_id": "student4", "amount": 999.0, "urgency": 10, "status": "submitted" }
+  ]
+}

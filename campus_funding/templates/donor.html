@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Donor Page - Mini Campus Funding Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="brand">
+          <div class="logo">CF</div>
+          <div>
+            <h1>Donor</h1>
+            <div class="lead">View students and approved requests, and donate</div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn secondary" href="/">Home</a>
+        </div>
+      </div>
+
+      {% set flashed = get_flashed_messages(with_categories=true) %}
+      <script>window.FLASK_MESSAGES = {{ flashed|tojson }};</script>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h3>Registered Students</h3>
+            <input id="filter" placeholder="Filter by id prefix" oninput="filter()" />
+            <ul id="students" class="list" style="margin-top:10px">
+              {% for s in students %}
+                <li data-id="{{ s.id }}">{{ s.id }} — {{ s.name }}</li>
+              {% else %}
+                <li class="muted">No students registered</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Approved Requests (ready for funding)</h3>
+            <ul class="list">
+                {% for r in approved %}
+                  <li style="margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between">
+                      <div>
+                        <strong>{{ r.id }}</strong> — {{ r.student_id }} — <em>Amount: {{ r.amount }}</em>
+                      </div>
+                      <div>
+                        <span style="background:#dff6ea;color:#1a7f37;padding:4px 8px;border-radius:12px;margin-right:8px">approved</span>
+                        <button onclick="showFundForm('{{ r.id }}','{{ r.amount }}')">Fund</button>
+                      </div>
+                    </div>
+                    <div id="fund-{{ r.id }}" class="hidden" style="margin-top:8px">
+                      <form method="post" action="/donate">
+                        <input type="hidden" name="request_id" value="{{ r.id }}" />
+                        <input name="donor_id" placeholder="Donor ID" required />
+                        <input name="donation" placeholder="Donation amount" value="{{ r.amount }}" required />
+                        <button type="submit">Donate</button>
+                      </form>
+                    </div>
+                  </li>
+                {% else %}
+                  <li class="muted">No approved requests</li>
+                {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h3>All Requests</h3>
+            <ul class="list">
+              {% for r in requests %}
+                <li>{{ r.id }} — {{ r.student_id }} — {{ r.amount }} — <span class="status {{ r.status }}">{{ r.status }}</span></li>
+              {% else %}
+                <li class="muted">No requests</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3>Donate</h3>
+            <form method="post" action="/donate" class="form-row">
+              <input name="donor_id" placeholder="Donor ID" required />
+              <input name="request_id" placeholder="Request ID (e.g. R1)" required />
+              <input name="donation" placeholder="Donation amount" required />
+              <button class="btn" type="submit">Donate</button>
+            </form>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+
+    <script>
+      function filter(){
+        var p = document.getElementById('filter').value.toLowerCase();
+        document.querySelectorAll('#students li').forEach(function(li){
+          li.style.display = li.getAttribute('data-id').toLowerCase().indexOf(p)===0 ? '' : 'none';
+        });
+      }
+      function showFundForm(reqId, amount){
+        var id = 'fund-' + reqId;
+        var el = document.getElementById(id);
+        if(!el) return;
+        if(el.classList.contains('hidden')) el.classList.remove('hidden'); else el.classList.add('hidden');
+        var inp = el.querySelector('input[name=donation]'); if(inp) inp.value = amount;
+      }
+    </script>
+    <script src="{{ url_for('static', filename='notify.js') }}"></script>
+  </div>
+  </body>
+</html>
